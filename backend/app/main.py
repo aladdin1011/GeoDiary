@@ -47,3 +47,15 @@ async def sign_in(data: SignInData):
         print(f"Error during sign-in: {e}")
         raise HTTPException(status_code=400, detail=str(e))
 
+@app.post("/auth/register")
+async def register(data: SignInData):
+    try:
+        print(f"Received register request for email: {data.email}")
+        response = supabase.auth.sign_up({"email": data.email, "password": data.password})
+        print(f"Supabase response: {response}")
+        if response.user is None:
+            raise HTTPException(status_code=400, detail=response["error"]["message"])
+        return {"message": "Registration successful", "data": response}
+    except Exception as e:
+        print(f"Error during registration: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
